@@ -102,7 +102,7 @@ const fetchProcurementData = async () => {
       }
     );
 
-    // Lấy dữ liệu từ API và lưu vào procurementData
+    // Lấy dữ liệu từ API và lưu vào p rocurementData
     const data = response.data.data || [];
     procurementData.value = data;
     filteredData.value = data.map((item, index) => ({
@@ -159,7 +159,7 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  height: 95vh;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
