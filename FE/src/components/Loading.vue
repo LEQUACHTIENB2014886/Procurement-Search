@@ -89,10 +89,13 @@ onMounted(() => {
       progress.value += 1;
     } else {
       clearInterval(interval);
-      isCompleted.value = true;
+      setTimeout(() => {
+        isCompleted.value = true; 
+      }, 1000); 
     }
   }, 10);
 });
+
 
 const onFadeOutComplete = () => {
   // Callback function for when the fade out animation is complete
