@@ -5578,3 +5578,123 @@
 		WHERE Pairs = OKQTY
 	) YWCP1
 	ORDER BY DDBH;
+
+2025/01/18 13:36:55 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:create` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:36:55 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:update` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:36:57 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/api/services/Procurement_Search.go:57 SLOW SQL >= 1s
+[2108.582ms] [rows:3681] SELECT 
+		ROW_NUMBER() OVER (ORDER BY DDBH) AS STT,
+		DDBH,
+		DATEDIFF(DAY, StartDate, EndDate) AS DiffDay,
+		CONVERT(VARCHAR, StartDate, 120) AS StartDate,
+		CONVERT(VARCHAR, EndDate, 120) AS EndDate
+	FROM (
+		SELECT DDBH,
+			(SELECT TOP 1 USERDATE FROM KCRKS WHERE CGBH = ddzl.DDBH ORDER BY USERDATE) AS StartDate,
+			(SELECT TOP 1 INDATE FROM YWCP WHERE DDBH = ddzl.DDBH ORDER BY INDATE DESC) AS EndDate
+		FROM (
+			SELECT *, 
+				(SELECT SUM(QTY) FROM YWCP WHERE DDBH = ddzl.DDBH) AS OKQTY
+			FROM (
+				SELECT DDBH, Pairs 
+				FROM ddzl
+				WHERE BUYNO LIKE '%202407%' AND GSBH = 'VA12' AND Pairs > 1
+			) ddzl
+		) ddzl
+		WHERE Pairs = OKQTY
+	) YWCP1
+	ORDER BY DDBH;
+
+2025/01/18 13:37:04 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:create` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:37:04 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:update` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:37:07 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/api/services/Procurement_Search.go:57 SLOW SQL >= 1s
+[2294.204ms] [rows:3681] SELECT 
+		ROW_NUMBER() OVER (ORDER BY DDBH) AS STT,
+		DDBH,
+		DATEDIFF(DAY, StartDate, EndDate) AS DiffDay,
+		CONVERT(VARCHAR, StartDate, 120) AS StartDate,
+		CONVERT(VARCHAR, EndDate, 120) AS EndDate
+	FROM (
+		SELECT DDBH,
+			(SELECT TOP 1 USERDATE FROM KCRKS WHERE CGBH = ddzl.DDBH ORDER BY USERDATE) AS StartDate,
+			(SELECT TOP 1 INDATE FROM YWCP WHERE DDBH = ddzl.DDBH ORDER BY INDATE DESC) AS EndDate
+		FROM (
+			SELECT *, 
+				(SELECT SUM(QTY) FROM YWCP WHERE DDBH = ddzl.DDBH) AS OKQTY
+			FROM (
+				SELECT DDBH, Pairs 
+				FROM ddzl
+				WHERE BUYNO LIKE '%202407%' AND GSBH = 'VA12' AND Pairs > 1
+			) ddzl
+		) ddzl
+		WHERE Pairs = OKQTY
+	) YWCP1
+	ORDER BY DDBH;
+
+2025/01/18 13:37:16 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:create` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:37:16 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:update` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:37:17 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/api/services/Procurement_Search.go:57 SLOW SQL >= 1s
+[1653.365ms] [rows:2154] SELECT 
+		ROW_NUMBER() OVER (ORDER BY DDBH) AS STT,
+		DDBH,
+		DATEDIFF(DAY, StartDate, EndDate) AS DiffDay,
+		CONVERT(VARCHAR, StartDate, 120) AS StartDate,
+		CONVERT(VARCHAR, EndDate, 120) AS EndDate
+	FROM (
+		SELECT DDBH,
+			(SELECT TOP 1 USERDATE FROM KCRKS WHERE CGBH = ddzl.DDBH ORDER BY USERDATE) AS StartDate,
+			(SELECT TOP 1 INDATE FROM YWCP WHERE DDBH = ddzl.DDBH ORDER BY INDATE DESC) AS EndDate
+		FROM (
+			SELECT *, 
+				(SELECT SUM(QTY) FROM YWCP WHERE DDBH = ddzl.DDBH) AS OKQTY
+			FROM (
+				SELECT DDBH, Pairs 
+				FROM ddzl
+				WHERE BUYNO LIKE '%202404%' AND GSBH = 'VA12' AND Pairs > 1
+			) ddzl
+		) ddzl
+		WHERE Pairs = OKQTY
+	) YWCP1
+	ORDER BY DDBH;
+
+2025/01/18 13:49:27 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:create` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:49:27 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+[info] replacing callback `gorm:update` from C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/pkg/database/database.go:75
+
+2025/01/18 13:49:29 C:/Users/LeQuachTien_IT/Desktop/Procurement Search/BE/golang-gin-web-api-template/internal/api/services/Procurement_Search.go:57 SLOW SQL >= 1s
+[2465.273ms] [rows:3681] SELECT 
+		ROW_NUMBER() OVER (ORDER BY DDBH) AS STT,
+		DDBH,
+		DATEDIFF(DAY, StartDate, EndDate) AS DiffDay,
+		CONVERT(VARCHAR, StartDate, 120) AS StartDate,
+		CONVERT(VARCHAR, EndDate, 120) AS EndDate
+	FROM (
+		SELECT DDBH,
+			(SELECT TOP 1 USERDATE FROM KCRKS WHERE CGBH = ddzl.DDBH ORDER BY USERDATE) AS StartDate,
+			(SELECT TOP 1 INDATE FROM YWCP WHERE DDBH = ddzl.DDBH ORDER BY INDATE DESC) AS EndDate
+		FROM (
+			SELECT *, 
+				(SELECT SUM(QTY) FROM YWCP WHERE DDBH = ddzl.DDBH) AS OKQTY
+			FROM (
+				SELECT DDBH, Pairs 
+				FROM ddzl
+				WHERE BUYNO LIKE '%202407%' AND GSBH = 'VA12' AND Pairs > 1
+			) ddzl
+		) ddzl
+		WHERE Pairs = OKQTY
+	) YWCP1
+	ORDER BY DDBH;
