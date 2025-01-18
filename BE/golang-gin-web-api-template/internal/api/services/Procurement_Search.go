@@ -30,21 +30,29 @@ func (s *ProcService) GetPurList(requestParams request.ProcListRequest) ([]types
 	dbInstance, _ := db.DB()
 
 	// Sử dụng fmt.Sprintf để chèn giá trị động vào câu lệnh SQL
-	query := fmt.Sprintf(`select *, DATEDIFF(DAY, Startdate, EndDate) as DiffDay from
-	(
-		select DDBH,
-		(select top 1 USERDATE from KCRKS where CGBH = ddzl.DDBH order by USERDATE) as StartDate,
-		(select top 1 INDATE from YWCP where DDBH = ddzl.DDBH order by INDATE Desc) as EndDate
-		from (
-			select *,(select sum(QTY) from YWCP
-			where DDBH = ddzl.DDBH) as OKQTY from (
-				select DDBH, Pairs from ddzl
-				where left(BUYNO, 6) = '%s' and GSBH = '%s' and pairs > 1
+	query := fmt.Sprintf(`SELECT 
+		ROW_NUMBER() OVER (ORDER BY DDBH) AS STT,
+		DDBH,
+		DATEDIFF(DAY, StartDate, EndDate) AS DiffDay,
+		CONVERT(VARCHAR, StartDate, 120) AS StartDate,
+		CONVERT(VARCHAR, EndDate, 120) AS EndDate
+	FROM (
+		SELECT DDBH,
+			(SELECT TOP 1 USERDATE FROM KCRKS WHERE CGBH = ddzl.DDBH ORDER BY USERDATE) AS StartDate,
+			(SELECT TOP 1 INDATE FROM YWCP WHERE DDBH = ddzl.DDBH ORDER BY INDATE DESC) AS EndDate
+		FROM (
+			SELECT *, 
+				(SELECT SUM(QTY) FROM YWCP WHERE DDBH = ddzl.DDBH) AS OKQTY
+			FROM (
+				SELECT DDBH, Pairs 
+				FROM ddzl
+				WHERE BUYNO LIKE '%%%s%%' AND GSBH = '%s' AND Pairs > 1
 			) ddzl
 		) ddzl
-		where pairs = OKQTY
+		WHERE Pairs = OKQTY
 	) YWCP1
-	order by DiffDay`, requestParams.BUYNO, requestParams.GSBH)
+	ORDER BY DDBH;`, requestParams.BUYNO, requestParams.GSBH)
+	
 	var result []types.ProcList
 	err = db.Raw(query).Scan(&result).Error
 	dbInstance.Close()
