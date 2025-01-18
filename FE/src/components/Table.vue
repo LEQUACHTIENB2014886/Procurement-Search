@@ -8,7 +8,7 @@
           <h2>BUYNO</h2>
           <el-input
             v-model="input"
-            placeholder="202407, press Enter"
+            placeholder="202401-202412, press Enter"
             clearable
             @keyup.enter="fetchProcurementData"
             @clear="resetSearch"
@@ -207,7 +207,7 @@ onMounted(() => {
 }
 
 .input {
-  width: 160px;
+  width: 210px;
 }
 
 .select {
