@@ -52,7 +52,7 @@ func (s *ProcService) GetPurList(requestParams request.ProcListRequest) ([]types
 		WHERE Pairs = OKQTY
 	) YWCP1
 	ORDER BY DDBH;`, requestParams.BUYNO, requestParams.GSBH)
-	
+
 	var result []types.ProcList
 	err = db.Raw(query).Scan(&result).Error
 	dbInstance.Close()
