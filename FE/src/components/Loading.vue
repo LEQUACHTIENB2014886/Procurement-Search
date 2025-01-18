@@ -91,14 +91,14 @@ onMounted(() => {
       clearInterval(interval);
       setTimeout(() => {
         isCompleted.value = true; 
-      }, 1000); 
+      }, 833); 
     }
   }, 10);
 });
 
 
 const onFadeOutComplete = () => {
-  // Callback function for when the fade out animation is complete
+  // Callback function for when the fade out animation is complete 
 };
 </script>
 
@@ -119,7 +119,7 @@ const onFadeOutComplete = () => {
   z-index: 9999;
   color: white;
   font-size: 18px;
-  font-family: "Oswald", sans-serif; /* Sử dụng font Oswald */
+  font-family: "Oswald", sans-serif; 
 }
 
 .circle-container {

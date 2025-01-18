@@ -22,4 +22,7 @@ onMounted(() => {
   text-align: center;
   margin-top: 50px;
 }
+*{
+  font-family: "Oswald", sans-serif; 
+}
 </style>
