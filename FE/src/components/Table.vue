@@ -1,176 +1,250 @@
 <template>
-    <div>
-      <el-row>
-        <el-col :span="3"></el-col>
-        <el-col :span="6" class="flex-start">
+  <div class="container">
+    <!-- Hiển thị Loading nếu đang tìm kiếm -->
+    <Loading v-if="isLoading" />
+
+    <el-row class="header">
+      <el-col :span="4"></el-col>
+      <el-col :span="15" class="flex-container">
+        <div class="input-container">
           <h2>BUYNO</h2>
           <el-input
             v-model="input"
-            placeholder="Nhập BUYNO..."
+            placeholder="202407, press Enter"
             clearable
-            @keyup.enter="searchData"  
-            @clear="resetSearch" 
+            @keyup.enter="fetchProcurementData"
+            @clear="resetSearch"
             class="input"
-            style="max-width: 200px"
           />
-        </el-col>
-        <el-col :span="5" class="flex-start">
+        </div>
+        <div class="select-container">
           <h2>GSBH</h2>
           <el-select
             v-model="gsbhValue"
-            class="input"
-            style="max-width: 90px"
-            @change="searchData"
+            class="select"
+            @change="fetchProcurementData"
           >
-            <el-option label="Tất cả" value="Tất cả"></el-option>
             <el-option label="VA12" value="VA12"></el-option>
             <el-option label="VC02" value="VC02"></el-option>
           </el-select>
-        </el-col>
-        <el-col :span="7" class="flex-end">
+        </div>
+        <div class="average-container">
           <h2>
-            DIFF DAY AVERAGE: <a style="color: red">{{ averageDiffDay }}</a>
+            DIFF DAY AVERAGE:
+            <span class="average-value">{{ formattedAverageDiffDay }}</span>
           </h2>
-        </el-col>
-        <el-col :span="3"></el-col>
-      </el-row>
-  
-      <el-row class="table">
-        <el-col :span="3"></el-col>
-        <el-col :span="2" class="table-cell bold-text bg-dark"><a>STT</a></el-col>
-        <el-col :span="2" class="table-cell bold-text bg-dark"><a>BUYNO</a></el-col>
-        <el-col :span="3" class="table-cell bold-text bg-dark"><a>GSBH</a></el-col>
-        <el-col :span="3" class="table-cell bold-text bg-dark"><a>DDBH</a></el-col>
-        <el-col :span="3" class="table-cell bold-text bg-dark"><a>Start Date</a></el-col>
-        <el-col :span="3" class="table-cell bold-text bg-dark"><a>End Date</a></el-col>
-        <el-col :span="2" class="table-cell bold-text bg-dark"><a>Diff Day</a></el-col>
-      </el-row>
-  
-      <el-row class="table" v-for="(item, index) in filteredData" :key="index">
-        <el-col :span="3"></el-col>
-        <el-col :span="2" class="table-cell"><a>{{ item.stt }}</a></el-col>
-        <el-col :span="2" class="table-cell"><a>{{ item.buyNo }}</a></el-col>
-        <el-col :span="3" class="table-cell"><a>{{ item.gsbh }}</a></el-col>
-        <el-col :span="3" class="table-cell"><a>{{ item.ddbh }}</a></el-col>
-        <el-col :span="3" class="table-cell"><a>{{ item.startDate }}</a></el-col>
-        <el-col :span="3" class="table-cell"><a>{{ item.endDate }}</a></el-col>
-        <el-col :span="2" class="table-cell"><a>{{ item.diffDay }}</a></el-col>
-      </el-row>
+        </div>
+      </el-col>
+      <el-col :span="5"></el-col>
+    </el-row>
+
+    <div class="table-container">
+      <el-auto-resizer>
+        <template #default="{ width, height }">
+          <el-table-v2
+            :columns="columns"
+            :data="filteredData"
+            :width="width > 1200 ? 1200 : width"
+            :height="height"
+            fixed
+            row-key="stt"
+            class="custom-table"
+          >
+            <el-table-column
+              v-for="column in columns"
+              :key="column.key"
+              :prop="column.dataKey"
+              :label="column.title"
+              :width="column.width"
+            />
+          </el-table-v2>
+        </template>
+      </el-auto-resizer>
     </div>
-  </template>
-  
-  <script lang="ts" setup>
-  import { ref, onMounted } from "vue";
-  import axios from "axios";
-  
-  const input = ref<string>("");
-  const gsbhValue = ref("Tất cả");
-  const procurementData = ref<any[]>([]);
-  const filteredData = ref<any[]>([]); // Dữ liệu đã lọc
-  const averageDiffDay = ref(0);
-  
-  const fetchProcurementData = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/procurement");
-      procurementData.value = response.data;
-      filteredData.value = procurementData.value; // Mặc định hiển thị toàn bộ dữ liệu
-      calculateAverageDiffDay();
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  
-  const calculateAverageDiffDay = () => {
-    const totalDays = procurementData.value.reduce(
-      (acc, item) => acc + item.diffDay,
-      0
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
+import Loading from "./Loading.vue"; // Import Loading component
+
+interface ProcurementItem {
+  STT: string;
+  DDBH: string;
+  StartDate: string;
+  EndDate: string;
+  DiffDay: string;
+}
+
+const input = ref<string>(""); // Giá trị input
+const gsbhValue = ref<string>("VA12"); // Giá trị GSBH
+const procurementData = ref<ProcurementItem[]>([]); // Dữ liệu lấy từ API
+const filteredData = ref<ProcurementItem[]>([]); // Dữ liệu đã lọc theo điều kiện
+const averageDiffDay = ref<number>(0); // Trung bình ngày chênh lệch
+const isLoading = ref<boolean>(false); // Biến trạng thái Loading
+
+const columns = [
+  { key: "stt", dataKey: "STT", title: "STT", width: 150 },
+  { key: "ddbh", dataKey: "DDBH", title: "DDBH", width: 250 },
+  { key: "startDate", dataKey: "StartDate", title: "Start Date", width: 300 },
+  { key: "endDate", dataKey: "EndDate", title: "End Date", width: 300 },
+  { key: "diffDay", dataKey: "DiffDay", title: "Diff Day", width: 170 },
+];
+
+// Lấy dữ liệu từ API
+
+// Cập nhật thời gian chờ trong Table.vue
+const fetchProcurementData = async () => {
+  if (!input.value) return; // Không gọi API nếu input rỗng
+
+  isLoading.value = true; // Bắt đầu hiển thị Loading
+
+  try {
+    const response = await axios.get(
+      `http://localhost:8081/api/v1/pro/procurement`,
+      {
+        params: {
+          BUYNO: input.value,
+          GSBH: gsbhValue.value,
+        },
+      }
     );
-    averageDiffDay.value = totalDays / procurementData.value.length;
-  };
-  
-  // Hàm tìm kiếm với điều kiện: Nếu input rỗng, sẽ trả về tất cả dữ liệu
-  const searchData = () => {
-    filteredData.value = procurementData.value.filter((item) => {
-      const matchesBuyNo = item.buyNo.toLowerCase().includes(input.value.toLowerCase());
-      const matchesGsbh = gsbhValue.value === "Tất cả" || item.gsbh === gsbhValue.value;
-      return matchesBuyNo && matchesGsbh;
-    });
-  };
-  
-  // Hàm reset search khi nhấn vào dấu x
-  const resetSearch = () => {
-    input.value = "";
-    gsbhValue.value = "Tất cả"; // Reset GSBH về "Tất cả"
-    filteredData.value = procurementData.value; // Trả về tất cả dữ liệu khi search bị xóa
-  };
-  
-  onMounted(() => {
-    fetchProcurementData();
-  });
-  </script>
-  
-  <style scoped>
-  * {
-    font-family: Arial, Helvetica, sans-serif;
+
+    const data = response.data.data || [];
+    procurementData.value = data as ProcurementItem[];
+    filteredData.value = data.map((item: ProcurementItem, index: number) => ({
+      ...item,
+      STT: (index + 1).toString(),
+    }));
+
+    calculateAverageDiffDay();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    // Tăng thời gian loading thêm 0.5s sau khi có dữ liệu
+    setTimeout(() => {
+      isLoading.value = false; // Sau 0.5s, ẩn loading
+    }, 500);
   }
-  
-  .flex-start {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+};
+
+
+
+// Tính trung bình DiffDay
+const calculateAverageDiffDay = () => {
+  if (!filteredData.value.length) {
+    averageDiffDay.value = 0;
+    return;
   }
-  
-  .flex-end {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  
-  .input {
-    margin-left: 10px;
-    height: 32px;
-    font-size: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
-  }
-  
-  .table {
-    text-align: left;
-    font-size: 18px;
-    padding: 1px;
-    background-color: #f5f5f5;
-  }
-  
-  .table-cell a {
-    display: block;
-    padding: 8px;
-    color: #333;
-    text-decoration: none;
-    text-align: center;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .table-cell a:hover {
-    background-color: #f0f0f0;
-    color: #007bff;
-  }
-  
-  .bold-text {
-    font-weight: bold;
-  }
-  
-  .bg-dark {
-    background-color: #d6d6d6;
-  }
-  
-  /* Đảm bảo màu nền kéo dài từ đầu tới cuối trang */
-  .table,
-  .table-cell {
-    background-color: #f5f5f5;
-  }
-  </style>
-  
+  const totalDays = filteredData.value.reduce(
+    (acc, item) => acc + Number(item.DiffDay || 0),
+    0
+  );
+  averageDiffDay.value = parseFloat(
+    (totalDays / filteredData.value.length).toFixed(2)
+  );
+};
+
+const formattedAverageDiffDay = computed(() => {
+  return averageDiffDay.value < 10
+    ? `0${averageDiffDay.value.toFixed(2)}`
+    : averageDiffDay.value.toFixed(2);
+});
+
+// Reset tìm kiếm
+const resetSearch = () => {
+  input.value = "";
+  gsbhValue.value = "VA12";
+  filteredData.value = procurementData.value.map((item, index) => ({
+    ...item,
+    STT: (index + 1).toString(),
+  }));
+  calculateAverageDiffDay();
+};
+
+onMounted(() => {
+  fetchProcurementData();
+});
+</script>
+
+<style scoped>
+.container {
+  height: 89vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.header {
+  width: 100%;
+  height: 140px;
+  margin-top: -40px;
+}
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.input-container,
+.select-container,
+.average-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.average-value {
+  color: red;
+  font-weight: bold;
+}
+
+.input,
+.select {
+  font-size: 18px;
+}
+
+.input {
+  width: 250px;
+}
+
+.select {
+  width: 80px;
+}
+
+.table-container {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px; 
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.el-table {
+  width: 100%;
+  table-layout: fixed; 
+}
+
+.el-table th,
+.el-table td {
+  font-size: 22px; /* Tăng kích thước chữ trong bảng */
+}
+
+.el-table-column {
+  padding: 15px; /* Tăng padding để cột rộng hơn */
+}
+
+.el-table th {
+  text-align: center;
+}
+
+.el-table td {
+  text-align: center;
+}
+</style>

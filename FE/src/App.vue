@@ -12,12 +12,12 @@ import { ref, onMounted } from "vue";
 import Loading from "./components/Loading.vue";
 import Table from "./components/Table.vue";
 
-const isLoading = ref(true); //
+const isLoading = ref(true);
 
 onMounted(() => {
   setTimeout(() => {
     isLoading.value = false;
-  }, 1500);
+  }, 1300);
 });
 </script>
 
