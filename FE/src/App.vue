@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <loading v-if="isLoading" text="Loading..." />
-    <div v-else>
-      <Table />
-    </div>
+    <Table v-else />
   </div>
 </template>
 
@@ -15,9 +13,7 @@ import Table from "./components/Table.vue";
 const isLoading = ref(true);
 
 onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 1300);
+  setTimeout(() => isLoading.value = false, 1300);
 });
 </script>
 

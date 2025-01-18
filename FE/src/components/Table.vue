@@ -1,10 +1,8 @@
 <template>
   <div class="container">
-    <!-- Hiển thị Loading nếu đang tìm kiếm -->
     <Loading v-if="isLoading" />
-
     <el-row class="header">
-      <el-col :span="4"></el-col>
+      <el-col :span="4" />
       <el-col :span="15" class="flex-container">
         <div class="input-container">
           <h2>BUYNO</h2>
@@ -19,13 +17,9 @@
         </div>
         <div class="select-container">
           <h2>GSBH</h2>
-          <el-select
-            v-model="gsbhValue"
-            class="select"
-            @change="fetchProcurementData"
-          >
-            <el-option label="VA12" value="VA12"></el-option>
-            <el-option label="VC02" value="VC02"></el-option>
+          <el-select v-model="gsbhValue" class="select" @change="fetchProcurementData">
+            <el-option label="VA12" value="VA12" />
+            <el-option label="VC02" value="VC02" />
           </el-select>
         </div>
         <div class="average-container">
@@ -35,7 +29,7 @@
           </h2>
         </div>
       </el-col>
-      <el-col :span="5"></el-col>
+      <el-col :span="5" />
     </el-row>
 
     <div class="table-container">
@@ -67,7 +61,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
-import Loading from "./Loading.vue"; // Import Loading component
+import Loading from "./Loading.vue";
 
 interface ProcurementItem {
   STT: string;
@@ -77,12 +71,12 @@ interface ProcurementItem {
   DiffDay: string;
 }
 
-const input = ref<string>(""); // Giá trị input
-const gsbhValue = ref<string>("VA12"); // Giá trị GSBH
-const procurementData = ref<ProcurementItem[]>([]); // Dữ liệu lấy từ API
-const filteredData = ref<ProcurementItem[]>([]); // Dữ liệu đã lọc theo điều kiện
-const averageDiffDay = ref<number>(0); // Trung bình ngày chênh lệch
-const isLoading = ref<boolean>(false); // Biến trạng thái Loading
+const input = ref<string>("");
+const gsbhValue = ref<string>("VA12");
+const procurementData = ref<ProcurementItem[]>([]);
+const filteredData = ref<ProcurementItem[]>([]);
+const averageDiffDay = ref<number>(0);
+const isLoading = ref<boolean>(false);
 
 const columns = [
   { key: "stt", dataKey: "STT", title: "STT", width: 150 },
@@ -92,13 +86,10 @@ const columns = [
   { key: "diffDay", dataKey: "DiffDay", title: "Diff Day", width: 170 },
 ];
 
-// Lấy dữ liệu từ API
-
-// Cập nhật thời gian chờ trong Table.vue
 const fetchProcurementData = async () => {
-  if (!input.value) return; // Không gọi API nếu input rỗng
+  if (!input.value) return;
 
-  isLoading.value = true; // Bắt đầu hiển thị Loading
+  isLoading.value = true;
 
   try {
     const response = await axios.get(
@@ -122,16 +113,12 @@ const fetchProcurementData = async () => {
   } catch (error) {
     console.error("Error fetching data:", error);
   } finally {
-    // Tăng thời gian loading thêm 0.5s sau khi có dữ liệu
     setTimeout(() => {
-      isLoading.value = false; // Sau 0.5s, ẩn loading
+      isLoading.value = false;
     }, 500);
   }
 };
 
-
-
-// Tính trung bình DiffDay
 const calculateAverageDiffDay = () => {
   if (!filteredData.value.length) {
     averageDiffDay.value = 0;
@@ -152,7 +139,6 @@ const formattedAverageDiffDay = computed(() => {
     : averageDiffDay.value.toFixed(2);
 });
 
-// Reset tìm kiếm
 const resetSearch = () => {
   input.value = "";
   gsbhValue.value = "VA12";
@@ -233,11 +219,11 @@ onMounted(() => {
 
 .el-table th,
 .el-table td {
-  font-size: 22px; /* Tăng kích thước chữ trong bảng */
+  font-size: 22px;
 }
 
 .el-table-column {
-  padding: 15px; /* Tăng padding để cột rộng hơn */
+  padding: 15px;
 }
 
 .el-table th {
